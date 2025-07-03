@@ -1,0 +1,8 @@
+RewriteEngine On
+RewriteBase /
+
+# Если запрошенный путь не соответствует реальному файлу или папке,
+# то отдаём index.html для корректной работы React Router
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^.*$ /index.html [L,QSA]
