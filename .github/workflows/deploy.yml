@@ -22,6 +22,7 @@ jobs:
         env:
           REACT_APP_GOOGLE_SHEET_ID: ${{ secrets.REACT_APP_GOOGLE_SHEET_ID }}
           REACT_APP_GOOGLE_API_KEY: ${{ secrets.REACT_APP_GOOGLE_API_KEY }}
+          REACT_APP_GOOGLE_SCRIPT_KEY: ${{ secrets.REACT_APP_GOOGLE_SCRIPT_KEY }}
 
       - name: 📤 Upload to Beget FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
