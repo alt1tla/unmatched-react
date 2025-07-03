@@ -1,13 +1,20 @@
 import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 
 const SHEET_ID = process.env.REACT_APP_GOOGLE_SHEET_ID;
 const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
-const RANGE = "Рейтинг!A:E";
+const RANGE = "Рейтинг!A:F";
+
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
 
 export default function RatingPage() {
+  const query = useQuery();
+  const defaultSearch = query.get("q") || "";
+  const [search, setSearch] = useState(defaultSearch);
   const [data, setData] = useState([]);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
-  const [search, setSearch] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -33,9 +40,11 @@ export default function RatingPage() {
         }
 
         const headers = rows[0];
-        const rowsData = rows.slice(1).map((row) =>
-          Object.fromEntries(headers.map((h, i) => [h, row[i] || ""]))
-        );
+        const rowsData = rows
+          .slice(1)
+          .map((row) =>
+            Object.fromEntries(headers.map((h, i) => [h, row[i] || ""]))
+          );
 
         setData(rowsData);
       } catch (e) {
@@ -55,7 +64,7 @@ export default function RatingPage() {
       } else if (prev.direction === "asc") {
         return { key, direction: "desc" };
       } else if (prev.direction === "desc") {
-        return { key: null, direction: null }; // сброс сортировки
+        return { key: null, direction: null }; 
       } else {
         return { key, direction: "asc" };
       }
@@ -81,9 +90,7 @@ export default function RatingPage() {
       }
 
       if (!isNaN(aVal) && !isNaN(bVal)) {
-        return sortConfig.direction === "asc"
-          ? aVal - bVal
-          : bVal - aVal;
+        return sortConfig.direction === "asc" ? aVal - bVal : bVal - aVal;
       }
 
       return sortConfig.direction === "asc"
@@ -123,24 +130,35 @@ export default function RatingPage() {
       >
         <thead style={{ backgroundColor: "#f0f0f0", cursor: "pointer" }}>
           <tr>
-            {Object.keys(data[0]).map((header) => (
-              <th
-                key={header}
-                onClick={() => handleSort(header)}
-                style={{
-                  color:
-                    header === sortConfig.key ? "#0077cc" : "inherit",
-                }}
-              >
-                {header}
-                {sortConfig.key === header &&
-                  (sortConfig.direction === "asc"
-                    ? " ▲"
-                    : sortConfig.direction === "desc"
-                    ? " ▼"
-                    : "")}
-              </th>
-            ))}
+            {Object.keys(data[0]).map((header) => {
+              let tooltip = "";
+              if (header.toLowerCase().includes("проц")) {
+                tooltip =
+                  "Победы / Кол-во игр — показывает, как часто игрок выигрывает. Чем выше, тем лучше.";
+              } else if (header.toLowerCase().includes("коэф")) {
+                tooltip =
+                  "Кол-во игр / Победы — показывает, сколько игр в среднем нужно для одной победы. Чем ниже, тем лучше.";
+              }
+
+              return (
+                <th
+                  key={header}
+                  onClick={() => handleSort(header)}
+                  title={tooltip} // 👈 подсказка
+                  style={{
+                    color: header === sortConfig.key ? "#0077cc" : "inherit",
+                  }}
+                >
+                  {header}
+                  {sortConfig.key === header &&
+                    (sortConfig.direction === "asc"
+                      ? " ▲"
+                      : sortConfig.direction === "desc"
+                      ? " ▼"
+                      : "")}
+                </th>
+              );
+            })}
           </tr>
         </thead>
         <tbody>

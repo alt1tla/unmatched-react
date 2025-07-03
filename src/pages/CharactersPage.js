@@ -1,9 +1,5 @@
 import { useEffect, useState } from "react";
-
-// Подставь свои значения в .env
-const SHEET_ID = process.env.REACT_APP_GOOGLE_SHEET_ID;
-const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
-const RANGE = "Бойцы!A:Z";
+import { Link } from "react-router-dom";
 
 // Карта изображений по имени бойца
 const fighterImages = {
@@ -34,54 +30,36 @@ const fighterImages = {
   Титания: "https://example.com/sinbad.jpg",
 };
 
+const SCRIPT_KEY = process.env.REACT_APP_GOOGLE_SCRIPT_KEY;
+const API_URL = `https://script.google.com/macros/s/${SCRIPT_KEY}/exec?listNames=true`;
+
 export default function CharactersPage() {
-  const [fighters, setFighters] = useState([]);
+  const [fighterNames, setFighterNames] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    async function fetchSheet() {
+    async function fetchNames() {
       try {
-        const res = await fetch(
-          `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}?key=${API_KEY}`
-        );
+        const res = await fetch(API_URL);
         const json = await res.json();
-
-        if (json.error) {
-          setError(json.error.message);
-          setLoading(false);
-          return;
+        if (json.names) {
+          setFighterNames(json.names);
+        } else {
+          setError("Ошибка: имена не найдены");
         }
-
-        const rows = json.values;
-        if (!rows || rows.length === 0) {
-          setError("Данные не найдены");
-          setLoading(false);
-          return;
-        }
-
-        const headers = rows[0];
-        const rowsData = rows
-          .slice(1)
-          .map((row) =>
-            Object.fromEntries(headers.map((h, i) => [h.trim(), row[i] || ""]))
-          );
-
-        setFighters(rowsData);
       } catch (e) {
-        console.error("Ошибка при загрузке:", e);
         setError("Ошибка загрузки данных");
       } finally {
         setLoading(false);
       }
     }
-
-    fetchSheet();
+    fetchNames();
   }, []);
 
-  const filteredFighters = fighters.filter((f) =>
-    f["Боец"]?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredNames = fighterNames.filter((name) =>
+    name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (loading) return <p>Загрузка бойцов...</p>;
@@ -92,7 +70,7 @@ export default function CharactersPage() {
       <h1
         style={{ fontSize: "28px", fontWeight: "bold", marginBottom: "1rem" }}
       >
-        Бойцы Unmatched
+        Бойцы
       </h1>
 
       <input
@@ -112,121 +90,60 @@ export default function CharactersPage() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
+          gridTemplateColumns: "repeat(5, 1fr)",
           gap: "1.5rem",
         }}
       >
-        {filteredFighters.map((f, idx) => {
-          const isMelee = f["Атака"]?.toLowerCase() === "ближняя";
-          const attackIcon = isMelee ? "🗡️" : "🏹";
-
-          const assistantAttackIcon =
-            f["Атака Помощник"]?.toLowerCase() === "ближняя" ? "🗡️" : "🏹";
-
-          return (
-            <div
-              key={idx}
+        {filteredNames.length === 0 && <p>Персонажи не найдены</p>}
+        {filteredNames.map((name, idx) => (
+          <Link
+            key={idx}
+            to={`/character/${encodeURIComponent(name)}`}
+            style={{
+              textDecoration: "none",
+              color: "inherit",
+              border: "1px solid #ddd",
+              borderRadius: "12px",
+              padding: "1rem",
+              backgroundColor: "#fff",
+              boxShadow: "0 3px 10px rgba(0,0,0,0.1)",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              transition: "transform 0.2s ease",
+            }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.transform = "scale(1.02)")
+            }
+            onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+          >
+            {fighterImages[name] && (
+              <img
+                src={fighterImages[name]}
+                alt={name}
+                style={{
+                  width: "100%",
+                  height: "180px",
+                  objectFit: "cover",
+                  objectPosition: "top",
+                  borderRadius: "8px",
+                  marginBottom: "0.75rem",
+                }}
+              />
+            )}
+            <h2
               style={{
-                border: "1px solid #ddd",
-                borderRadius: "12px",
-                padding: "1rem",
-                backgroundColor: "#fff",
-                boxShadow: "0 3px 10px rgba(0,0,0,0.1)",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
+                fontSize: "20px",
+                fontWeight: "bold",
+                marginBottom: "0.5rem",
+                textAlign: "center",
               }}
             >
-              {fighterImages[f["Боец"]] && (
-                <img
-                  src={fighterImages[f["Боец"]]}
-                  alt={f["Боец"]}
-                  style={{
-                    width: "100%",
-                    height: "180px",
-                    objectFit: "cover",
-                    borderRadius: "8px",
-                    marginBottom: "0.75rem",
-                  }}
-                />
-              )}
-
-              <h2
-                style={{
-                  fontSize: "20px",
-                  fontWeight: "bold",
-                  marginBottom: "0.5rem",
-                }}
-              >
-                {f["Боец"]}
-              </h2>
-
-              {/* Блок персонажа */}
-              <div>
-                <p
-                  style={{
-                    display: "flex",
-                    gap: "1rem",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    marginInlineEnd: "1.5rem",
-                  }}
-                >
-                  <span>
-                    ❤️ <strong>Здоровье:</strong> {f["Здоровье"]}
-                  </span>
-                  <span>
-                    {attackIcon} <strong>Атака:</strong> {f["Атака"]}
-                  </span>
-                </p>
-                <p>
-                  👣 <strong>Перемещение:</strong> {f["Перемещение"]}
-                </p>
-                <p>
-                  ✨ <strong>Способность:</strong>
-                  <br /> {f["Способность"]}
-                </p>
-              </div>
-
-              {/* Блок помощника, если есть */}
-              {f["Помощник"] && f["Помощник"] !== "-" && (
-                <div
-                  style={{
-                    padding: "0.5rem",
-                    backgroundColor: "#f9f9f9",
-                    borderRadius: "8px",
-                    marginBottom: "1rem",
-                  }}
-                >
-                  <p>
-                    🤝 <strong>Помощник:</strong> {f["Помощник"]}
-                  </p>
-                  <p
-                    style={{
-                      display: "flex",
-                      gap: "1rem",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      marginInlineEnd: "1.5rem",
-                    }}
-                  >
-                    <span>
-                      💞 <strong>Здоровье:</strong> {f["Здоровье Помощник"]}
-                    </span>
-                    <span>
-                      {assistantAttackIcon} <strong>Атака:</strong>{" "}
-                      {f["Атака Помощник"]}
-                    </span>
-                  </p>
-                </div>
-              )}
-
-              <p>
-                📦 <strong>Набор:</strong> {f["Набор"]}
-              </p>
-            </div>
-          );
-        })}
+              {name}
+            </h2>
+          </Link>
+        ))}
       </div>
     </div>
   );

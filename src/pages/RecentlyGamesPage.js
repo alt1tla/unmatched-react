@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 const SHEET_ID = process.env.REACT_APP_GOOGLE_SHEET_ID;
 const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
@@ -74,8 +75,42 @@ export default function RecentlyGamesPage() {
           {data.map((row, idx) => (
             <tr key={idx}>
               {Object.entries(row).map(([key, val]) => {
-                // Подсветка победителя (колонка "Победитель")
                 const isWinner = key.toLowerCase().includes("победитель");
+                const isPlayerName =
+                  key.toLowerCase().includes("игрок") ||
+                  key.toLowerCase().includes("победитель");
+                const isCharacterName =
+                  key.toLowerCase().includes("боец") ||
+                  key.toLowerCase().includes("герой") ||
+                  key.toLowerCase().includes("персонаж");
+
+                const cellContent =
+                  isPlayerName && val && val !== "-" ? (
+                    <Link
+                      style={{
+                        textDecoration: "none",
+                        color: "inherit",
+                        cursor: "pointer",
+                      }}
+                      to={`/rating?q=${encodeURIComponent(val)}`}
+                    >
+                      {val}
+                    </Link>
+                  ) : isCharacterName && val && val !== "-" ? (
+                    <Link
+                      style={{
+                        textDecoration: "none",
+                        color: "#007acc",
+                        cursor: "pointer",
+                      }}
+                      to={`/character/${encodeURIComponent(val)}`}
+                    >
+                      {val}
+                    </Link>
+                  ) : (
+                    val
+                  );
+
                 return (
                   <td
                     key={key}
@@ -90,7 +125,7 @@ export default function RecentlyGamesPage() {
                           : "inherit",
                     }}
                   >
-                    {val}
+                    {cellContent}
                   </td>
                 );
               })}

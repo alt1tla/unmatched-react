@@ -3,6 +3,7 @@ import RecentlyGamesPage from "./pages/RecentlyGamesPage";
 import GamesPage from "./pages/GamesPage";
 import RatingsPage from "./pages/RatingsPage";
 import CharactersPage from "./pages/CharactersPage";
+import CharacterPage from "./pages/CharacterPage";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="/games" element={<GamesPage />} />
           <Route path="/rating" element={<RatingsPage />} />
           <Route path="/characters" element={<CharactersPage />} />
+          <Route path="/character/:name" element={<CharacterPage />} />
         </Routes>
       </div>
     </Router>
