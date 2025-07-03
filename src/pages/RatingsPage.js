@@ -6,7 +6,6 @@ const RANGE = "Рейтинг!A:F";
 
 export default function RatingPage() {
   const [data, setData] = useState([]);
-  const [originalData, setOriginalData] = useState([]);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
   const [search, setSearch] = useState("");
   const [error, setError] = useState(null);
@@ -39,7 +38,6 @@ export default function RatingPage() {
         );
 
         setData(rowsData);
-        setOriginalData(rowsData);
       } catch (e) {
         setError("Ошибка загрузки рейтинга");
       } finally {
