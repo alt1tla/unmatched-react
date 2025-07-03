@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 const SHEET_ID = process.env.REACT_APP_GOOGLE_SHEET_ID;
 const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
-const RANGE = "Рейтинг!A:F";
+const RANGE = "Рейтинг!A:E";
 
 export default function RatingPage() {
   const [data, setData] = useState([]);
