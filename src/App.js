@@ -8,8 +8,8 @@ function App() {
     <Router>
       <div style={{ padding: "1rem" }}>
         <nav>
-          <Link to="/">Последние игры</Link>
-          <Link to="/games" style={{ marginLeft: "1rem" }}>Все игры</Link>
+          <Link to="/">Последние матчи</Link>
+          <Link to="/games" style={{ marginLeft: "1rem" }}>Все матчи</Link>
           <Link to="/rating" style={{ marginLeft: "1rem" }}>
             Рейтинг игроков
           </Link>
