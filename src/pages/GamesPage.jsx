@@ -10,8 +10,6 @@ export default function GamesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Новые состояния для фильтров
-  const [filterDate, setFilterDate] = useState("");
   const [filterPlayer, setFilterPlayer] = useState("");
 
   useEffect(() => {
@@ -69,49 +67,27 @@ export default function GamesPage() {
         h.toLowerCase().includes("персонаж"))
   );
 
-  // Функция для фильтрации по дате и игроку
+  // Фильтрация данных только по игроку
   const filteredData = data.filter((row) => {
-    let matchDate = true;
-    let matchPlayer = true;
+    if (!filterPlayer) return true;
 
-    if (filterDate) {
-      // Приведём обе даты к одному формату, например 'YYYY-MM-DD'
-      const rowDate = new Date(row[dateField]).toISOString().slice(0, 10);
-      matchDate = rowDate === filterDate;
-    }
+    const playerFields = headers.filter(
+      (h) =>
+        h.toLowerCase().includes("игрок") ||
+        h.toLowerCase().includes("победитель")
+    );
 
-    if (filterPlayer) {
-      // Проверяем, есть ли в полях с игроками совпадение по фильтру
-      const playerFields = headers.filter(
-        (h) =>
-          h.toLowerCase().includes("игрок") ||
-          h.toLowerCase().includes("победитель")
-      );
-
-      // Проверяем, есть ли фильтрованный игрок в любом из этих полей (регистр не важен)
-      matchPlayer = playerFields.some((field) =>
-        row[field]?.toLowerCase().includes(filterPlayer.toLowerCase())
-      );
-    }
-
-    return matchDate && matchPlayer;
+    return playerFields.some((field) =>
+      row[field]?.toLowerCase().includes(filterPlayer.toLowerCase())
+    );
   });
 
   return (
     <div className="container">
       <h1>Все партии настольных игр</h1>
 
-      {/* Фильтры */}
+      {/* Фильтр */}
       <div className="filters">
-        <label>
-          Фильтр по дате:{" "}
-          <input
-            type="date"
-            value={filterDate}
-            onChange={(e) => setFilterDate(e.target.value)}
-          />
-        </label>
-
         <label>
           Фильтр по игроку:{" "}
           <input
