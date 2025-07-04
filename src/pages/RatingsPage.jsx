@@ -64,7 +64,7 @@ export default function RatingPage() {
       } else if (prev.direction === "asc") {
         return { key, direction: "desc" };
       } else if (prev.direction === "desc") {
-        return { key: null, direction: null }; 
+        return { key: null, direction: null };
       } else {
         return { key, direction: "asc" };
       }
@@ -100,35 +100,25 @@ export default function RatingPage() {
   }, [filteredData, sortConfig]);
 
   if (loading) return <p>Загрузка рейтинга...</p>;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
+  if (error) return <p className="err">{error}</p>;
 
   return (
-    <div style={{ padding: "1rem", fontFamily: "Arial, sans-serif" }}>
+    <div className="container">
       <h1>Рейтинг игроков</h1>
 
-      <input
-        type="text"
-        placeholder="Поиск по имени игрока..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        style={{
-          marginBottom: "1rem",
-          padding: "0.5rem",
-          width: "300px",
-          fontSize: "1rem",
-        }}
-      />
+      <div className="filters">
+        <input
+          type="text"
+          placeholder="Поиск по имени..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="filters input"
+        />
+      </div>
 
-      <table
-        border="1"
-        cellPadding="8"
-        style={{
-          borderCollapse: "collapse",
-          width: "100%",
-          textAlign: "center",
-        }}
-      >
-        <thead style={{ backgroundColor: "#f0f0f0", cursor: "pointer" }}>
+      {/* Таблица для десктопа */}
+      <table border="1" cellPadding="8" className="table-common desktop-table">
+        <thead>
           <tr>
             {Object.keys(data[0]).map((header) => {
               let tooltip = "";
@@ -144,7 +134,8 @@ export default function RatingPage() {
                 <th
                   key={header}
                   onClick={() => handleSort(header)}
-                  title={tooltip} // 👈 подсказка
+                  title={tooltip}
+                  className="table-th"
                   style={{
                     color: header === sortConfig.key ? "#0077cc" : "inherit",
                   }}
@@ -164,13 +155,54 @@ export default function RatingPage() {
         <tbody>
           {sortedData.map((row, idx) => (
             <tr key={idx}>
-              {Object.values(row).map((val, i) => (
-                <td key={i}>{val}</td>
+              {Object.entries(row).map(([key, val], i) => (
+                <td
+                  key={i}
+                  className={[
+                    key.toLowerCase() === "игрок" ? "plr" : "",
+                    key.toLowerCase() === "проц. побед" ? "wins" : "",
+                    key.toLowerCase() === "коэф. эффективности"
+                      ? "eff"
+                      : "",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                >
+                  {val}
+                </td>
               ))}
             </tr>
           ))}
         </tbody>
       </table>
+
+      {/* Карточки для мобилок */}
+      <div className="mobile-cards">
+        {sortedData.map((row, idx) => (
+          <div className="card" key={idx}>
+            {Object.entries(row).map(([key, val]) =>
+              val && val !== "-" ? (
+                <div key={key} className="card-row">
+                  <span className="card-label">{key}</span>:{" "}
+                  <span
+                    className={[
+                      key.toLowerCase() === "игрок" ? "cell-plr" : "",
+                      key.toLowerCase() === "проц. побед" ? "cell-wins" : "",
+                      key.toLowerCase() === "коэф. эффективности"
+                        ? "cell-eff"
+                        : "",
+                    ]
+                      .filter(Boolean)
+                      .join(" ")}
+                  >
+                    {val}
+                  </span>
+                </div>
+              ) : null
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

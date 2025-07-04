@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 const SHEET_ID = process.env.REACT_APP_GOOGLE_SHEET_ID;
 const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
@@ -8,6 +9,10 @@ export default function GamesPage() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Новые состояния для фильтров
+  const [filterDate, setFilterDate] = useState("");
+  const [filterPlayer, setFilterPlayer] = useState("");
 
   useEffect(() => {
     async function fetchSheet() {
@@ -35,7 +40,7 @@ export default function GamesPage() {
             Object.fromEntries(headers.map((h, i) => [h, row[i] || ""]))
           );
 
-        setData(rowsData);
+        setData(rowsData.reverse()); // Сначала последние
       } catch (e) {
         setError("Ошибка загрузки данных");
       } finally {
@@ -47,55 +52,200 @@ export default function GamesPage() {
   }, []);
 
   if (loading) return <p>Загрузка данных...</p>;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
+  if (error) return <p className="err">{error}</p>;
+  if (data.length === 0) return <p>Нет данных для отображения</p>;
+
+  const headers = Object.keys(data[0]);
+  const dateField =
+    headers.find((h) => h.toLowerCase().includes("дата")) || headers[0];
+
+  const importantFields = headers.filter(
+    (h) =>
+      h !== dateField &&
+      (h.toLowerCase().includes("игрок") ||
+        h.toLowerCase().includes("победитель") ||
+        h.toLowerCase().includes("боец") ||
+        h.toLowerCase().includes("герой") ||
+        h.toLowerCase().includes("персонаж"))
+  );
+
+  // Функция для фильтрации по дате и игроку
+  const filteredData = data.filter((row) => {
+    let matchDate = true;
+    let matchPlayer = true;
+
+    if (filterDate) {
+      // Приведём обе даты к одному формату, например 'YYYY-MM-DD'
+      const rowDate = new Date(row[dateField]).toISOString().slice(0, 10);
+      matchDate = rowDate === filterDate;
+    }
+
+    if (filterPlayer) {
+      // Проверяем, есть ли в полях с игроками совпадение по фильтру
+      const playerFields = headers.filter(
+        (h) =>
+          h.toLowerCase().includes("игрок") ||
+          h.toLowerCase().includes("победитель")
+      );
+
+      // Проверяем, есть ли фильтрованный игрок в любом из этих полей (регистр не важен)
+      matchPlayer = playerFields.some((field) =>
+        row[field]?.toLowerCase().includes(filterPlayer.toLowerCase())
+      );
+    }
+
+    return matchDate && matchPlayer;
+  });
 
   return (
-    <div style={{ padding: "1rem", fontFamily: "Arial, sans-serif" }}>
-      <h1>Партий настольных игр</h1>
-      <table
-        border="1"
-        cellPadding="8"
-        style={{
-          borderCollapse: "collapse",
-          width: "100%",
-          textAlign: "center",
-        }}
-      >
-        <thead style={{ backgroundColor: "#f0f0f0" }}>
+    <div className="container">
+      <h1>Все партии настольных игр</h1>
+
+      {/* Фильтры */}
+      <div className="filters">
+        <label>
+          Фильтр по дате:{" "}
+          <input
+            type="date"
+            value={filterDate}
+            onChange={(e) => setFilterDate(e.target.value)}
+          />
+        </label>
+
+        <label>
+          Фильтр по игроку:{" "}
+          <input
+            type="text"
+            placeholder="Введите имя игрока"
+            value={filterPlayer}
+            onChange={(e) => setFilterPlayer(e.target.value)}
+          />
+        </label>
+      </div>
+
+      {/* Таблица для десктопа */}
+      <table border="1" cellPadding="8" className="desktop-table table-common">
+        <thead>
           <tr>
-            {Object.keys(data[0]).map((header) => (
+            {headers.map((header) => (
               <th key={header}>{header}</th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {data.map((row, idx) => (
-            <tr key={idx}>
-              {Object.entries(row).map(([key, val]) => {
-                // Подсветка победителя (колонка "Победитель")
-                const isWinner = key.toLowerCase().includes("победитель");
-                return (
-                  <td
-                    key={key}
-                    style={{
-                      fontWeight:
-                        isWinner && val !== "-" && val !== ""
-                          ? "bold"
-                          : "normal",
-                      color:
-                        isWinner && val !== "-" && val !== ""
-                          ? "green"
-                          : "inherit",
-                    }}
-                  >
-                    {val}
-                  </td>
-                );
-              })}
+          {filteredData.length === 0 ? (
+            <tr>
+              <td colSpan={headers.length}>
+                Нет данных, соответствующих фильтру
+              </td>
             </tr>
-          ))}
+          ) : (
+            filteredData.map((row, idx) => (
+              <tr key={idx}>
+                {headers.map((key) => {
+                  const val = row[key];
+                  const isWinner = key.toLowerCase().includes("победитель");
+                  const isPlayerName =
+                    key.toLowerCase().includes("игрок") ||
+                    key.toLowerCase().includes("победитель");
+                  const isCharacterName =
+                    key.toLowerCase().includes("боец") ||
+                    key.toLowerCase().includes("персонаж");
+
+                  const cellContent =
+                    isPlayerName && val && val !== "-" ? (
+                      <Link
+                        className="none"
+                        to={`/rating?q=${encodeURIComponent(val)}`}
+                      >
+                        {val}
+                      </Link>
+                    ) : isCharacterName && val && val !== "-" ? (
+                      <Link
+                        className="none"
+                        to={`/character/${encodeURIComponent(val)}`}
+                      >
+                        {val}
+                      </Link>
+                    ) : (
+                      val
+                    );
+
+                  return (
+                    <td
+                      className={
+                        `${isPlayerName ? "cell-player" : ""} ` +
+                        `${isCharacterName ? "cell-character" : ""} ` +
+                        `${isWinner ? "cell-winner" : ""}`
+                      }
+                    >
+                      {cellContent}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
+
+      {/* Карточки для мобильных */}
+      <div className="mobile-cards">
+        {filteredData.length === 0 ? (
+          <p>Нет данных, соответствующих фильтру</p>
+        ) : (
+          filteredData.map((row, idx) => {
+            const date = row[dateField];
+            return (
+              <div className="card" key={idx}>
+                <div className="card-date">{date}</div>
+                {importantFields.map((key) => {
+                  const val = row[key];
+                  if (!val || val === "-") return null;
+
+                  const isWinner = key.toLowerCase().includes("победитель");
+                  const isPlayerName =
+                    key.toLowerCase().includes("игрок") ||
+                    key.toLowerCase().includes("победитель");
+                  const isCharacterName =
+                    key.toLowerCase().includes("боец") ||
+                    key.toLowerCase().includes("персонаж");
+                  const content = isPlayerName ? (
+                    <Link
+                      className="player-link"
+                      to={`/rating?q=${encodeURIComponent(val)}`}
+                    >
+                      {val}
+                    </Link>
+                  ) : isCharacterName ? (
+                    <Link
+                      className="character-link"
+                      to={`/character/${encodeURIComponent(val)}`}
+                    >
+                      {val}
+                    </Link>
+                  ) : (
+                    val
+                  );
+                  return (
+                    <div
+                      className="card-row"
+                      key={key}
+                      style={{
+                        fontWeight: isWinner ? "700" : "normal",
+                        color: isWinner ? "#2a9d8f" : "inherit",
+                      }}
+                    >
+                      <span className="card-label">{key.replace(":", "")}</span>{" "}
+                      {content}
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })
+        )}
+      </div>
     </div>
   );
 }

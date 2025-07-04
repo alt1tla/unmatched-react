@@ -93,39 +93,23 @@ export default function CharactersPage() {
   });
 
   if (loading) return <p>Загрузка бойцов...</p>;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
+  if (error) return <p className="err">{error}</p>;
 
   return (
-    <div style={{ padding: "1rem", fontFamily: "Arial, sans-serif" }}>
-      <h1
-        style={{ fontSize: "28px", fontWeight: "bold", marginBottom: "1rem" }}
-      >
-        Бойцы
-      </h1>
+    <div className="container">
+      <h1>Бойцы</h1>
 
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: "1rem",
-          marginBottom: "1.5rem",
-          alignItems: "center",
-        }}
-      >
+      <div className="filters">
         <input
           type="text"
           placeholder="Поиск по имени..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          style={{
-            padding: "0.5rem",
-            width: "200px",
-            fontSize: "16px",
-          }}
+          className="filters input"
         />
 
-        <label style={{ display: "flex", flexDirection: "column" }}>
-          <span style={{ fontSize: "14px", marginBottom: "4px" }}>Атака</span>
+        <label className="filters label">
+          <span>Атака</span>
           <select
             value={attackFilter}
             onChange={(e) => setAttackFilter(e.target.value)}
@@ -136,10 +120,8 @@ export default function CharactersPage() {
           </select>
         </label>
 
-        <label style={{ display: "flex", flexDirection: "column" }}>
-          <span style={{ fontSize: "14px", marginBottom: "4px" }}>
-            Наличие помощника
-          </span>
+        <label className="filters label">
+          <span>Наличие помощника</span>
           <select
             value={assistantFilter}
             onChange={(e) => setAssistantFilter(e.target.value)}
@@ -150,10 +132,8 @@ export default function CharactersPage() {
           </select>
         </label>
 
-        <label style={{ display: "flex", flexDirection: "column" }}>
-          <span style={{ fontSize: "14px", marginBottom: "4px" }}>
-            Перемещение
-          </span>
+        <label className="filters label">
+          <span>Перемещение</span>
           <select
             value={movementFilter}
             onChange={(e) => setMovementFilter(e.target.value)}
@@ -167,13 +147,7 @@ export default function CharactersPage() {
           </select>
         </label>
       </div>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-          gap: "1.5rem",
-        }}
-      >
+      <div className="cards-short">
         {filteredFighters.map((f, idx) => {
           const isMelee = f["Атака"]?.toLowerCase() === "ближняя";
           const attackIcon = isMelee ? "🗡️" : "🏹";
@@ -184,24 +158,10 @@ export default function CharactersPage() {
             <Link
               to={`/character/${encodeURIComponent(name)}`}
               key={idx}
-              style={{
-                textDecoration: "none",
-                color: "inherit",
-              }}
+              className="none"
             >
               <div
-                style={{
-                  border: "1px solid #ddd",
-                  borderRadius: "12px",
-                  padding: "1rem",
-                  backgroundColor: "#fff",
-                  boxShadow: "0 3px 10px rgba(0,0,0,0.1)",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  transition: "transform 0.3s ease",
-                  cursor: "pointer",
-                }}
+                className="card-short"
                 onMouseEnter={(e) =>
                   (e.currentTarget.style.transform = "scale(1.02)")
                 }
@@ -210,57 +170,17 @@ export default function CharactersPage() {
                 }
               >
                 {fighterImages[name] && (
-                  <img
-                    src={fighterImages[name]}
-                    alt={name}
-                    style={{
-                      width: "100%",
-                      height: "180px",
-                      objectFit: "cover",
-                      objectPosition: "top",
-                      borderRadius: "8px",
-                      marginBottom: "0.75rem",
-                    }}
-                  />
+                  <img src={fighterImages[name]} alt={name} className="img" />
                 )}
-
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "0.25rem",
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                    }}
-                  >
-                    <h2
-                      style={{
-                        fontSize: "20px",
-                        fontWeight: "bold",
-                        margin: 0,
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "6px",
-                      }}
-                    >
-                      {name} {hasAssistant && <span>🤝</span>}
-                    </h2>
-                    <span style={{ fontSize: "18px" }}>{attackIcon}</span>
-                    <div
-                      style={{
-                        display: "flex",
-                        gap: "12px",
-                        fontSize: "16px",
-                      }}
-                    >
-                      {f["Здоровье"] && <span>❤️ {f["Здоровье"]}</span>}
-                      {f["Перемещение"] && <span>👣 {f["Перемещение"]}</span>}
-                    </div>
+                <div className="desc-short">
+                  <h2 className="name-short">
+                    {name}
+                    <span>{attackIcon}</span>
+                    {hasAssistant && <span>🤝</span>}
+                  </h2>
+                  <div className="art-short">
+                    {f["Здоровье"] && <span>❤️ {f["Здоровье"]}</span>}
+                    {f["Перемещение"] && <span>👣 {f["Перемещение"]}</span>}
                   </div>
                 </div>
               </div>

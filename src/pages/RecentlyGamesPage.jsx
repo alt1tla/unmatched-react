@@ -38,7 +38,7 @@ export default function RecentlyGamesPage() {
 
         const last10Games = rowsData.slice(-10);
 
-        setData(last10Games);
+        setData(last10Games.reverse()); // Чтобы последние игры были сверху
       } catch (e) {
         setError("Ошибка загрузки данных");
       } finally {
@@ -50,23 +50,34 @@ export default function RecentlyGamesPage() {
   }, []);
 
   if (loading) return <p>Загрузка данных...</p>;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
+  if (error) return <p className="err">{error}</p>;
+
+  const headers = Object.keys(data[0]);
+
+  // Определяем название поля с датой (предполагаем что первая колонка это дата, или ищем что содержит "дата")
+  const dateField =
+    headers.find((h) => h.toLowerCase().includes("дата")) || headers[0];
+
+  // Важные поля, кроме даты, для карточек
+  const importantFields = headers.filter(
+    (h) =>
+      h !== dateField &&
+      (h.toLowerCase().includes("игрок") ||
+        h.toLowerCase().includes("победитель") ||
+        h.toLowerCase().includes("боец") ||
+        h.toLowerCase().includes("герой") ||
+        h.toLowerCase().includes("персонаж"))
+  );
 
   return (
-    <div style={{ padding: "1rem", fontFamily: "Arial, sans-serif" }}>
+    <div className="container">
       <h1>Последние 10 партий</h1>
-      <table
-        border="1"
-        cellPadding="8"
-        style={{
-          borderCollapse: "collapse",
-          width: "100%",
-          textAlign: "center",
-        }}
-      >
-        <thead style={{ backgroundColor: "#f0f0f0" }}>
+
+      {/* Таблица для десктопа */}
+      <table border="1" cellPadding="8" className="desktop-table table-common">
+        <thead>
           <tr>
-            {Object.keys(data[0]).map((header) => (
+            {headers.map((header) => (
               <th key={header}>{header}</th>
             ))}
           </tr>
@@ -74,35 +85,27 @@ export default function RecentlyGamesPage() {
         <tbody>
           {data.map((row, idx) => (
             <tr key={idx}>
-              {Object.entries(row).map(([key, val]) => {
+              {headers.map((key) => {
+                const val = row[key];
                 const isWinner = key.toLowerCase().includes("победитель");
                 const isPlayerName =
                   key.toLowerCase().includes("игрок") ||
                   key.toLowerCase().includes("победитель");
                 const isCharacterName =
                   key.toLowerCase().includes("боец") ||
-                  key.toLowerCase().includes("герой") ||
                   key.toLowerCase().includes("персонаж");
 
                 const cellContent =
                   isPlayerName && val && val !== "-" ? (
                     <Link
-                      style={{
-                        textDecoration: "none",
-                        color: "inherit",
-                        cursor: "pointer",
-                      }}
+                      className="none"
                       to={`/rating?q=${encodeURIComponent(val)}`}
                     >
                       {val}
                     </Link>
                   ) : isCharacterName && val && val !== "-" ? (
                     <Link
-                      style={{
-                        textDecoration: "none",
-                        color: "#007acc",
-                        cursor: "pointer",
-                      }}
+                      className="none"
                       to={`/character/${encodeURIComponent(val)}`}
                     >
                       {val}
@@ -113,17 +116,11 @@ export default function RecentlyGamesPage() {
 
                 return (
                   <td
-                    key={key}
-                    style={{
-                      fontWeight:
-                        isWinner && val !== "-" && val !== ""
-                          ? "bold"
-                          : "normal",
-                      color:
-                        isWinner && val !== "-" && val !== ""
-                          ? "green"
-                          : "inherit",
-                    }}
+                    className={
+                      `${isPlayerName ? "cell-player" : ""} ` +
+                      `${isCharacterName ? "cell-character" : ""} ` +
+                      `${isWinner ? "cell-winner" : ""}`
+                    }
                   >
                     {cellContent}
                   </td>
@@ -133,6 +130,56 @@ export default function RecentlyGamesPage() {
           ))}
         </tbody>
       </table>
+
+      {/* Карточки для мобильных */}
+      <div className="mobile-cards">
+        {data.map((row, idx) => {
+          const date = row[dateField];
+          return (
+            <div className="card" key={idx}>
+              <div className="card-date">{date}</div>
+              {importantFields.map((key) => {
+                const val = row[key];
+                if (!val || val === "-") return null;
+
+                const isWinner = key.toLowerCase().includes("победитель");
+                const isPlayerName =
+                  key.toLowerCase().includes("игрок") ||
+                  key.toLowerCase().includes("победитель");
+                const isCharacterName =
+                  key.toLowerCase().includes("боец") ||
+                  key.toLowerCase().includes("персонаж");
+                const content = isPlayerName ? (
+                  <Link
+                    className="player-link"
+                    to={`/rating?q=${encodeURIComponent(val)}`}
+                  >
+                    {val}
+                  </Link>
+                ) : isCharacterName ? (
+                  <Link
+                    className="character-link"
+                    to={`/character/${encodeURIComponent(val)}`}
+                  >
+                    {val}
+                  </Link>
+                ) : (
+                  val
+                );
+                return (
+                  <div
+                    key={key}
+                    className={`${isWinner ? "cell-winner" : ""}` + " card-row"}
+                  >
+                    <span className="card-label ">{key.replace(":", "")}</span>{" "}
+                    {content}
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

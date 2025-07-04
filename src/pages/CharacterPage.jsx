@@ -44,31 +44,19 @@ export default function CharacterPage() {
   }, [name]);
 
   if (loading) return <p>Загрузка персонажа...</p>;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
+  if (error) return <p className="err">{error}</p>;
 
   return (
-    <div style={{ padding: "1rem", fontFamily: "Arial, sans-serif" }}>
-      <Link
-        to="/characters"
-        style={{ marginBottom: "1rem", display: "inline-block" }}
-      >
-        ← Назад к списку
-      </Link>
+    <div className="container">
+      <Link to="/characters">← Назад к списку</Link>
 
-      <h1 style={{ fontSize: "28px", fontWeight: "bold" }}>{data["Боец"]}</h1>
+      <h1>{data["Боец"]}</h1>
 
       {fighterImages[data["Боец"]] && (
         <img
           src={fighterImages[data["Боец"]]}
           alt={data["Боец"]}
-          style={{
-            width: "100%",
-            maxWidth: "400px",
-            height: "auto",
-            objectFit: "cover",
-            borderRadius: "8px",
-            margin: "1rem 0",
-          }}
+          className="img"
         />
       )}
 
@@ -86,14 +74,7 @@ export default function CharacterPage() {
       </p>
 
       {data["Помощник"] && data["Помощник"] !== "-" && (
-        <div
-          style={{
-            marginTop: "1rem",
-            padding: "1rem",
-            backgroundColor: "#f9f9f9",
-            borderRadius: "8px",
-          }}
-        >
+        <div className="art">
           <h3>🤝 Помощник: {data["Помощник"]}</h3>
           <p>
             ❤️ Здоровье: {data["Здоровье Помощник"]} |{" "}
@@ -103,7 +84,7 @@ export default function CharacterPage() {
         </div>
       )}
 
-      <p style={{ marginTop: "1rem" }}>
+      <p>
         📦 <strong>Набор:</strong> {data["Набор"]}
       </p>
     </div>
