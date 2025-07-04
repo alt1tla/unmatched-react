@@ -169,7 +169,7 @@ export default function RecentlyGamesPage() {
                 return (
                   <div
                     key={key}
-                    className={`${isWinner ? "cell-winner" : ""}` + " card-row"}
+                    className={`${isWinner ? "cell-winner card-row" : "card-row"}`}
                   >
                     <span className="card-label ">{key.replace(":", "")}</span>{" "}
                     {content}
