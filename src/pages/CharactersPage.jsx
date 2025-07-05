@@ -1,19 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { getFighterImage } from "../constants/fighterImages";
 
 // Подставь свои значения в .env
 const SHEET_ID = process.env.REACT_APP_GOOGLE_SHEET_ID;
 const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
 const RANGE = "Бойцы!A:Z";
-
-// Карта изображений по имени бойца
-const fighterImages = {
-  Медуза: "/images/medusa.webp",
-  "Король Артур": "/images/arthur.jpg",
-  Алиса: "/images/alice.webp",
-  Синдбад: "/images/sindbad.webp",
-  // Остальные...
-};
 
 export default function CharactersPage() {
   const [fighters, setFighters] = useState([]);
@@ -100,16 +92,20 @@ export default function CharactersPage() {
       <h1>Бойцы</h1>
 
       <div className="filters">
-        <input
-          type="text"
-          placeholder="Поиск по имени..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="filters input"
-        />
+        <div className="filters">
+          <label>
+            Поиск бойца:{" "}
+            <input
+              type="text"
+              placeholder="Введите имя..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </label>
+        </div>
 
         <label className="filters label">
-          <span>Атака</span>
+          <span>Атака:</span>
           <select
             value={attackFilter}
             onChange={(e) => setAttackFilter(e.target.value)}
@@ -121,19 +117,19 @@ export default function CharactersPage() {
         </label>
 
         <label className="filters label">
-          <span>Наличие помощника</span>
+          <span>Помощник:</span>
           <select
             value={assistantFilter}
             onChange={(e) => setAssistantFilter(e.target.value)}
           >
             <option value="все">Не важно</option>
-            <option value="есть">Есть помощник</option>
-            <option value="нет">Без помощника</option>
+            <option value="есть">Есть</option>
+            <option value="нет">Нет</option>
           </select>
         </label>
 
         <label className="filters label">
-          <span>Перемещение</span>
+          <span>Перемещение:</span>
           <select
             value={movementFilter}
             onChange={(e) => setMovementFilter(e.target.value)}
@@ -169,9 +165,13 @@ export default function CharactersPage() {
                   (e.currentTarget.style.transform = "scale(1)")
                 }
               >
-                {fighterImages[name] && (
-                  <img src={fighterImages[name]} alt={name} className="img" />
-                )}
+                <img
+                  src={getFighterImage(name)}
+                  alt={name}
+                  loading="lazy"
+                  decoding="async"
+                  className="img-short"
+                />
                 <div className="desc-short">
                   <h2 className="name-short">
                     {name}

@@ -1,15 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import fighterImages from "../constants/fighterImages";
 
 const SCRIPT_KEY = process.env.REACT_APP_GOOGLE_SCRIPT_KEY;
 const API_URL = `https://script.google.com/macros/s/${SCRIPT_KEY}/exec`;
-
-const fighterImages = {
-  Медуза: "/images/medusa.webp",
-  "Король Артур": "/images/arthur.jpg",
-  Алиса: "/images/alice.webp",
-  Синдбад: "/images/sindbad.webp",
-};
 
 function getAttackEmoji(attackType) {
   if (!attackType) return "";

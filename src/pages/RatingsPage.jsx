@@ -107,13 +107,15 @@ export default function RatingPage() {
       <h1>Рейтинг игроков</h1>
 
       <div className="filters">
-        <input
-          type="text"
-          placeholder="Поиск по имени..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="filters input"
-        />
+        <label>
+          Поиск игрока:{" "}
+          <input
+            type="text"
+            placeholder="Введите имя..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </label>
       </div>
 
       {/* Таблица для десктопа */}
@@ -161,9 +163,7 @@ export default function RatingPage() {
                   className={[
                     key.toLowerCase() === "игрок" ? "plr" : "",
                     key.toLowerCase() === "проц. побед" ? "wins" : "",
-                    key.toLowerCase() === "коэф. эффективности"
-                      ? "eff"
-                      : "",
+                    key.toLowerCase() === "коэф. эффективности" ? "eff" : "",
                   ]
                     .filter(Boolean)
                     .join(" ")}

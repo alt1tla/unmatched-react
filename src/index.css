@@ -19,6 +19,9 @@ body {
   .card {
     margin-bottom: 1rem;
   }
+  h1 {
+    font-size: 1.5rem;
+  }
 }
 @media (min-width: 800px) and (max-width: 1524px) {
   .desktop-table {
@@ -154,9 +157,20 @@ a.character-link:hover {
 
 .img {
   width: 100%;
+  aspect-ratio: 1/1;
   max-width: 400px;
   height: auto;
   object-fit: cover;
+}
+
+.img-short {
+  width: 100%;
+  aspect-ratio: 1/1;
+  max-width: 400px;
+  height: auto;
+  object-fit: cover;
+  object-position: top;
+  display: block;
 }
 
 .art {

@@ -38,7 +38,7 @@ export default function GamesPage() {
             Object.fromEntries(headers.map((h, i) => [h, row[i] || ""]))
           );
 
-        setData(rowsData.reverse()); // Сначала последние
+        setData(rowsData); 
       } catch (e) {
         setError("Ошибка загрузки данных");
       } finally {
@@ -84,7 +84,7 @@ export default function GamesPage() {
 
   return (
     <div className="container">
-      <h1>Все партии настольных игр</h1>
+      <h1>Все партии</h1>
 
       {/* Фильтр */}
       <div className="filters">
@@ -92,7 +92,7 @@ export default function GamesPage() {
           Фильтр по игроку:{" "}
           <input
             type="text"
-            placeholder="Введите имя игрока"
+            placeholder="Введите имя..."
             value={filterPlayer}
             onChange={(e) => setFilterPlayer(e.target.value)}
           />
