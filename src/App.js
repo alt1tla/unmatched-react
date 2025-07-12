@@ -16,6 +16,7 @@ function App() {
             Рейтинг игроков
           </Link>
           <Link to="/characters" style={{ marginLeft: "1rem" }}>Бойцы</Link>
+          <Link to="https://docs.google.com/forms/d/e/1FAIpQLSfdCJc-TGtNaQ0Hi_DPXpNgipQjbBcUngbO9qT0Yz7f4wj5yg/viewform?usp=header" style={{ marginLeft: "1rem" }}>Голосование</Link>
         </nav>
 
         <Routes>
