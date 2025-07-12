@@ -42,7 +42,7 @@ export default function CharacterPage() {
 
   return (
     <div className="container">
-      <Link to="/characters">← Назад к списку</Link>
+      <Link className="link-nav" to="/characters">← Назад к списку</Link>
 
       <h1>{data["Боец"]}</h1>
 
@@ -78,6 +78,16 @@ export default function CharacterPage() {
         </div>
       )}
 
+      <p>
+        ⭐ <strong>Рейтинг:</strong> {data["Оценка"]} / 5 (
+        {data["Количество оценок"]} игрока оценили этого бойца)
+      </p>
+      <Link
+        to="https://docs.google.com/forms/d/e/1FAIpQLSfdCJc-TGtNaQ0Hi_DPXpNgipQjbBcUngbO9qT0Yz7f4wj5yg/viewform?usp=header"
+        className="link-nav"
+      >
+        ➡️ Оценить ⬅️
+      </Link>
       <p>
         📦 <strong>Набор:</strong> {data["Набор"]}
       </p>

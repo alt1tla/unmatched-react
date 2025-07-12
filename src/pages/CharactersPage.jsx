@@ -5,7 +5,7 @@ import { getFighterImage } from "../constants/fighterImages";
 // Подставь свои значения в .env
 const SHEET_ID = process.env.REACT_APP_GOOGLE_SHEET_ID;
 const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
-const RANGE = "Бойцы!A:Z";
+const RANGE = "Бойцы!A:O";
 
 export default function CharactersPage() {
   const [fighters, setFighters] = useState([]);
@@ -13,6 +13,7 @@ export default function CharactersPage() {
   const [attackFilter, setAttackFilter] = useState("все");
   const [assistantFilter, setAssistantFilter] = useState("все");
   const [movementFilter, setMovementFilter] = useState("все");
+  const [ratingFilter, setRatingFilter] = useState("все");
   const [availableMovements, setAvailableMovements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -81,7 +82,18 @@ export default function CharactersPage() {
     const moveMatch =
       movementFilter === "все" || f["Перемещение"] === movementFilter;
 
-    return nameMatch && attackMatch && assistantMatch && moveMatch;
+    const ratingMatch =
+      ratingFilter === "все" ||
+      (ratingFilter === "5" && parseFloat(f["Оценка"]) === 5) ||
+      (ratingFilter === "4" && parseFloat(f["Оценка"]) >= 4 && parseFloat(f["Оценка"]) < 5) ||
+      (ratingFilter === "3" && parseFloat(f["Оценка"]) >= 3 && parseFloat(f["Оценка"]) < 4) ||
+      (ratingFilter === "2" && parseFloat(f["Оценка"]) >= 2 && parseFloat(f["Оценка"]) < 3) ||
+      (ratingFilter === "1" && parseFloat(f["Оценка"]) >= 1 && parseFloat(f["Оценка"]) < 2) ||
+      (ratingFilter === "0" && parseFloat(f["Оценка"]) === 0);
+
+    return (
+      nameMatch && attackMatch && assistantMatch && moveMatch && ratingMatch
+    );
   });
 
   if (loading) return <p>Загрузка бойцов...</p>;
@@ -142,6 +154,22 @@ export default function CharactersPage() {
             ))}
           </select>
         </label>
+
+        <label className="filters label">
+          <span>Оценка:</span>
+          <select
+            value={ratingFilter}
+            onChange={(e) => setRatingFilter(e.target.value)}
+          >
+            <option value="все">Любая</option>
+            <option value="5">5</option>
+            <option value="4">4</option>
+            <option value="3">3</option>
+            <option value="2">2</option>
+            <option value="1">1</option>
+            <option value="0">Нет</option>
+          </select>
+        </label>
       </div>
       <div className="cards-short">
         {filteredFighters.map((f, idx) => {
@@ -181,6 +209,7 @@ export default function CharactersPage() {
                   <div className="art-short">
                     {f["Здоровье"] && <span>❤️ {f["Здоровье"]}</span>}
                     {f["Перемещение"] && <span>👣 {f["Перемещение"]}</span>}
+                    {f["Оценка"] && <span>⭐ {f["Оценка"]}</span>}
                   </div>
                 </div>
               </div>

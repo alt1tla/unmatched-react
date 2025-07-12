@@ -10,13 +10,13 @@ function App() {
     <Router>
       <div style={{ padding: "1rem" }}>
         <nav>
-          <Link to="/">Последние матчи</Link>
-          <Link to="/games" style={{ marginLeft: "1rem" }}>Все матчи</Link>
-          <Link to="/rating" style={{ marginLeft: "1rem" }}>
-            Рейтинг игроков
+          <Link className="link-nav" to="/">Последние матчи</Link>
+          <Link className="link-nav" to="/games" style={{ marginLeft: "1rem" }}>Матчи</Link>
+          <Link className="link-nav" to="/rating" style={{ marginLeft: "1rem" }}>
+            Игроки
           </Link>
-          <Link to="/characters" style={{ marginLeft: "1rem" }}>Бойцы</Link>
-          <Link to="https://docs.google.com/forms/d/e/1FAIpQLSfdCJc-TGtNaQ0Hi_DPXpNgipQjbBcUngbO9qT0Yz7f4wj5yg/viewform?usp=header" style={{ marginLeft: "1rem" }}>Голосование</Link>
+          <Link className="link-nav" to="/characters" style={{ marginLeft: "1rem" }}>Бойцы</Link>
+          <Link className="link-nav" to="https://docs.google.com/forms/d/e/1FAIpQLSfdCJc-TGtNaQ0Hi_DPXpNgipQjbBcUngbO9qT0Yz7f4wj5yg/viewform?usp=header" style={{ marginLeft: "1rem" }}>Оценить бойца</Link>
         </nav>
 
         <Routes>
