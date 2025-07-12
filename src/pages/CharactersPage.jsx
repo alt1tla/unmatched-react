@@ -85,11 +85,20 @@ export default function CharactersPage() {
     const ratingMatch =
       ratingFilter === "все" ||
       (ratingFilter === "5" && parseFloat(f["Оценка"]) === 5) ||
-      (ratingFilter === "4" && parseFloat(f["Оценка"]) >= 4 && parseFloat(f["Оценка"]) < 5) ||
-      (ratingFilter === "3" && parseFloat(f["Оценка"]) >= 3 && parseFloat(f["Оценка"]) < 4) ||
-      (ratingFilter === "2" && parseFloat(f["Оценка"]) >= 2 && parseFloat(f["Оценка"]) < 3) ||
-      (ratingFilter === "1" && parseFloat(f["Оценка"]) >= 1 && parseFloat(f["Оценка"]) < 2) ||
-      (ratingFilter === "0" && parseFloat(f["Оценка"]) === 0);
+      (ratingFilter === "4" &&
+        parseFloat(f["Оценка"]) >= 4 &&
+        parseFloat(f["Оценка"]) < 5) ||
+      (ratingFilter === "3" &&
+        parseFloat(f["Оценка"]) >= 3 &&
+        parseFloat(f["Оценка"]) < 4) ||
+      (ratingFilter === "2" &&
+        parseFloat(f["Оценка"]) >= 2 &&
+        parseFloat(f["Оценка"]) < 3) ||
+      (ratingFilter === "1" &&
+        parseFloat(f["Оценка"]) >= 1 &&
+        parseFloat(f["Оценка"]) < 2) ||
+      (ratingFilter === "нет" && parseFloat(f["Оценка"]) === 0) ||
+      (ratingFilter === "есть" && parseFloat(f["Оценка"]) >= 0);
 
     return (
       nameMatch && attackMatch && assistantMatch && moveMatch && ratingMatch
@@ -167,7 +176,8 @@ export default function CharactersPage() {
             <option value="3">3</option>
             <option value="2">2</option>
             <option value="1">1</option>
-            <option value="0">Нет</option>
+            <option value="нет">Нет</option>
+            <option value="есть">Есть</option>
           </select>
         </label>
       </div>

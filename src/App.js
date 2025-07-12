@@ -10,7 +10,7 @@ function App() {
     <Router>
       <div style={{ padding: "1rem" }}>
         <nav>
-          <Link className="link-nav" to="/">Последние матчи</Link>
+          <Link className="link-nav" to="/">Недавние</Link>
           <Link className="link-nav" to="/games" style={{ marginLeft: "1rem" }}>Матчи</Link>
           <Link className="link-nav" to="/rating" style={{ marginLeft: "1rem" }}>
             Игроки
