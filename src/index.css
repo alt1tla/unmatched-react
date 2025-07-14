@@ -9,6 +9,10 @@ body {
   font-family: "JetBrains Mono", sans-serif;
 }
 
+.dn {
+  display: none;
+}
+
 @media (max-width: 799px) {
   .desktop-table {
     display: none;
@@ -249,6 +253,13 @@ a.character-link:hover {
   border-radius: 4px;
   display: inline-block;
 }
+.cell-fighter {
+  background-color: #f1c9cf;
+  color: #ba384c;
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: inline-block;
+}
 .plr {
   background-color: #e0d4f7;
 }
@@ -259,6 +270,9 @@ a.character-link:hover {
 
 .eff {
   background-color: #f5f5dc;
+}
+.fighter {
+  background-color: #f1c9cf;
 }
 
 .err {

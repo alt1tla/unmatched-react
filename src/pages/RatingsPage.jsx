@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 
 const SHEET_ID = process.env.REACT_APP_GOOGLE_SHEET_ID;
 const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
-const RANGE = "Рейтинг!A:F";
+const RANGE = "Рейтинг!A:G";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -164,6 +164,7 @@ export default function RatingPage() {
                     key.toLowerCase() === "игрок" ? "plr" : "",
                     key.toLowerCase() === "проц. побед" ? "wins" : "",
                     key.toLowerCase() === "коэф. эффективности" ? "eff" : "",
+                    key.toLowerCase() === "любимый боец" ? "fighter" : "",
                   ]
                     .filter(Boolean)
                     .join(" ")}
@@ -191,11 +192,14 @@ export default function RatingPage() {
                       key.toLowerCase() === "коэф. эффективности"
                         ? "cell-eff"
                         : "",
+                      key.toLowerCase() === "любимый боец"
+                        ? "cell-fighter"
+                        : "",
                     ]
                       .filter(Boolean)
                       .join(" ")}
                   >
-                    {val}
+                    {val ? val : "-"}
                   </span>
                 </div>
               ) : null
